@@ -18,6 +18,7 @@ import com.blikoon.qrcodescanner.QrCodeActivity;
 
 public class SGHomeActivity extends AppCompatActivity {
     private Button mScanButton;
+    private boolean mIsScanTapped = false;
     String[] perms = {"android.permission.READ_EXTERNAL_STORAGE", "android.permission.CAMERA"};
     int PERM_REQUEST_CODE = 200;
     private static final int REQUEST_CODE_QR_SCAN = 101;
@@ -34,6 +35,7 @@ public class SGHomeActivity extends AppCompatActivity {
                 if (isBothPermissionsGranted()) {
                     doScan();
                 } else {
+                    mIsScanTapped = true;
                     requestForPermission();
                 }
             }
@@ -116,6 +118,10 @@ public class SGHomeActivity extends AppCompatActivity {
         if (permsRequestCode == PERM_REQUEST_CODE) {
             boolean storagePermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
             boolean cameraPermissionGranted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+            if (mIsScanTapped && storagePermissionGranted && cameraPermissionGranted) {
+                mIsScanTapped = false;
+                doScan();
+            }
         }
     }
 
