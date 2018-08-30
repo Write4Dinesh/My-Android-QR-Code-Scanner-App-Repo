@@ -12,10 +12,10 @@ import android.widget.Button;
 
 import com.blikoon.qrcodescanner.QrCodeActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class SGHomeActivity extends AppCompatActivity {
     private Button button;
     private static final int REQUEST_CODE_QR_SCAN = 101;
-    private final String LOGTAG = "QRCScanner-MainActivity";
+    private final String LOGTAG = "SGHomeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Start the qr scan activity
-                Intent i = new Intent(MainActivity.this,QrCodeActivity.class);
+                Intent i = new Intent(SGHomeActivity.this,QrCodeActivity.class);
                 startActivityForResult( i,REQUEST_CODE_QR_SCAN);
             }
         });
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             String result = data.getStringExtra("com.blikoon.qrcodescanner.error_decoding_image");
             if( result!=null)
             {
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                AlertDialog alertDialog = new AlertDialog.Builder(SGHomeActivity.this).create();
                 alertDialog.setTitle("Scan Error");
                 alertDialog.setMessage("QR Code could not be scanned");
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             //Getting the passed result
             String result = data.getStringExtra("com.blikoon.qrcodescanner.got_qr_scan_relult");
             Log.d(LOGTAG,"Have scan result in your app activity :"+ result);
-            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+            AlertDialog alertDialog = new AlertDialog.Builder(SGHomeActivity.this).create();
             alertDialog.setTitle("Scan result");
             alertDialog.setMessage(result);
             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
