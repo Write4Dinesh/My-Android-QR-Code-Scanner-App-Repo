@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.blikoon.qrcodescannerlibrary.com.sgdm.MainActivity">
+    tools:context="com.sgdm.qrscanner.SGHomeActivity">
 
     <Button
         android:id="@+id/button_start_scan"
