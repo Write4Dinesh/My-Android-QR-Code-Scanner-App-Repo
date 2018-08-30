@@ -142,7 +142,7 @@ public class SGHomeActivity extends AppCompatActivity {
 
     private void showAlert() {
         final String result = "The Camera & Storage permissions are required to permform this operations. Please enable the permissions" +
-                "from the App settings.";
+                " from the App settings.";
         AlertDialog alertDialog = new AlertDialog.Builder(SGHomeActivity.this).create();
         alertDialog.setTitle("Permission Required");
         alertDialog.setMessage(result);
