@@ -1,4 +1,4 @@
-package com.blikoon.qrcodescannerlibrary;
+package com.sgdm.qrscanner;
 
 import org.junit.Test;
 

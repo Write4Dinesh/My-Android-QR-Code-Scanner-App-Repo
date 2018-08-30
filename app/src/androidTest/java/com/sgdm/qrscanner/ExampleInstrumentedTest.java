@@ -1,4 +1,4 @@
-package com.blikoon.qrcodescannerlibrary;
+package com.sgdm.qrscanner;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
