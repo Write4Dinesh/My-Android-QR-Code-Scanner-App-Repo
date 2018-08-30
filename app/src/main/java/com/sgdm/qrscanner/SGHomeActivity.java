@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -109,7 +111,14 @@ public class SGHomeActivity extends AppCompatActivity {
 
     private void requestForPermission() {
         if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && !isBothPermissionsGranted()) {
-            ActivityCompat.requestPermissions(this, perms, PERM_REQUEST_CODE);
+            boolean showRationale1 = ActivityCompat.shouldShowRequestPermissionRationale(this, perms[0]);
+            boolean showRationale2 = ActivityCompat.shouldShowRequestPermissionRationale(this, perms[1]);
+            if (showRationale1 && showRationale2) {
+                ActivityCompat.requestPermissions(this, perms, PERM_REQUEST_CODE);
+            } else {
+                //TODO: redirect the user to app settings so that they can enable both permissons from there.
+                showAlert();
+            }
         }
     }
 
@@ -129,5 +138,33 @@ public class SGHomeActivity extends AppCompatActivity {
         int result = ContextCompat.checkSelfPermission(getApplicationContext(), perms[0]);
         int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), perms[1]);
         return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void showAlert() {
+        final String result = "The Camera & Storage permissions are required to permform this operations. Please enable the permissions" +
+                "from the App settings.";
+        AlertDialog alertDialog = new AlertDialog.Builder(SGHomeActivity.this).create();
+        alertDialog.setTitle("Permission Required");
+        alertDialog.setMessage(result);
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Goto App Settings",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        openAppSettings();
+                    }
+                });
+        alertDialog.show();
+    }
+
+    private void openAppSettings() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivityForResult(intent, 120);
     }
 }
