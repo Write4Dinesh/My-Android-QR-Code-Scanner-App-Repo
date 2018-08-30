@@ -1,4 +1,4 @@
-package com.sgdm;
+package com.sgdm.qrscanner;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.blikoon.qrcodescanner.QrCodeActivity;
-import com.sgdm.qrscanner.R;
 
 public class MainActivity extends AppCompatActivity {
     private Button button;
