@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">QR Scanner</string>
+    <string name="btn_label_share">Share</string>
+    <string name="btn_search_on_web">Search On Web</string>
+    <string name="btn_copy_text">Copy Text</string>
+    <string name="btn_label_close">Close</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="goto_app_settings">Goto App Settings</string>
+    <string name="why_permissions_required">The Camera and Storage permissions are required to perform this operation. Please enable the permissions from the App settings.</string>
+    <string name="scan_error_title">Scan Error</string>
+    <string name="scan_error_body">QR Code could not be scanned</string>
+    <string name="scan_result_title">Scan result</string>
+    <string name="click_to_scan">Click to scan</string>
 </resources>

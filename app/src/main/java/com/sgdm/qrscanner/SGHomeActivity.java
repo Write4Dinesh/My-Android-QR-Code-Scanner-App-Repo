@@ -1,6 +1,9 @@
 package com.sgdm.qrscanner;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,13 +18,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blikoon.qrcodescanner.QrCodeActivity;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class SGHomeActivity extends AppCompatActivity {
     private Button mScanButton;
+    private Button mSearchOnWebBtn;
+    private Button mShareBtn;
+    private Button mCopyBtn;
+    private TextView mBarcodeTv;
     private boolean mIsScanTapped = false;
-    String[] perms = {"android.permission.READ_EXTERNAL_STORAGE", "android.permission.CAMERA"};
+    String[] permissions = {"android.permission.READ_EXTERNAL_STORAGE", "android.permission.CAMERA"};
     int PERM_REQUEST_CODE = 200;
     private static final int REQUEST_CODE_QR_SCAN = 101;
     private final String LOGTAG = "SGHomeActivity";
@@ -30,11 +42,12 @@ public class SGHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mBarcodeTv = (TextView) findViewById(R.id.barcode_data_tv);
         mScanButton = (Button) findViewById(R.id.button_start_scan);
         mScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isBothPermissionsGranted()) {
+                if (areBothPermissionsGranted()) {
                     doScan();
                 } else {
                     mIsScanTapped = true;
@@ -42,7 +55,53 @@ public class SGHomeActivity extends AppCompatActivity {
                 }
             }
         });
+        mSearchOnWebBtn = (Button) findViewById(R.id.search_button);
+        mSearchOnWebBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mBarcodeTv != null && mBarcodeTv.getText() != null && !mBarcodeTv.getText().toString().isEmpty()) {
+                    String escapedQuery = null;
+                    try {
+                        escapedQuery = URLEncoder.encode(mBarcodeTv.getText().toString(), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    Uri uri = Uri.parse("http://www.google.com/#q=" + escapedQuery);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                } else {
+                    showToast("Invalid Data");
+                }
+            }
+        });
 
+        mShareBtn = (Button) findViewById(R.id.share_button);
+        mShareBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mBarcodeTv != null && mBarcodeTv.getText() != null && !mBarcodeTv.getText().toString().isEmpty()) {
+                    shareWithOtherApps(mBarcodeTv.getText().toString());
+                } else {
+                    showToast("Invalid Data");
+                }
+            }
+        });
+        mCopyBtn = (Button) findViewById(R.id.copy_button);
+        mCopyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mBarcodeTv != null && mBarcodeTv.getText() != null && !mBarcodeTv.getText().toString().isEmpty()) {
+                    copyToClip(mBarcodeTv.getText().toString());
+                } else {
+                    showToast("Invalid Data");
+                }
+            }
+        });
+
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     private void doScan() {
@@ -62,9 +121,9 @@ public class SGHomeActivity extends AppCompatActivity {
             String result = data.getStringExtra("com.blikoon.qrcodescanner.error_decoding_image");
             if (result != null) {
                 AlertDialog alertDialog = new AlertDialog.Builder(SGHomeActivity.this).create();
-                alertDialog.setTitle("Scan Error");
-                alertDialog.setMessage("QR Code could not be scanned");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                alertDialog.setTitle(getString(R.string.scan_error_title));
+                alertDialog.setMessage(getString(R.string.scan_error_body));
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.btn_label_close),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -80,44 +139,45 @@ public class SGHomeActivity extends AppCompatActivity {
                 return;
             //Getting the passed result
             final String result = data.getStringExtra("com.blikoon.qrcodescanner.got_qr_scan_relult");
-            Log.d(LOGTAG, "Have scan result in your app activity :" + result);
+            mBarcodeTv.setText(result);
+            /*Log.d(LOGTAG, "Have scan result in your app activity :" + result);
             AlertDialog alertDialog = new AlertDialog.Builder(SGHomeActivity.this).create();
-            alertDialog.setTitle("Scan result");
+            alertDialog.setTitle(getString(R.string.scan_result_title));
             alertDialog.setMessage(result);
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.btn_label_close),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     });
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Share",
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.btn_label_share),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            share(result);
+                            shareWithOtherApps(result);
                         }
                     });
             alertDialog.show();
-
+*/
         }
     }
 
-    private void share(String str) {
+    private void shareWithOtherApps(String qrcodeData) {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, str);
-        startActivity(Intent.createChooser(sharingIntent, "choose apps to share"));
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, qrcodeData);
+        startActivity(Intent.createChooser(sharingIntent, "choose apps to shareWithOtherApps"));
     }
 
     private void requestForPermission() {
-        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && !isBothPermissionsGranted()) {
-            boolean showRationale1 = ActivityCompat.shouldShowRequestPermissionRationale(this, perms[0]);
-            boolean showRationale2 = ActivityCompat.shouldShowRequestPermissionRationale(this, perms[1]);
+        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && !areBothPermissionsGranted()) {
+            boolean showRationale1 = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0]);
+            boolean showRationale2 = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[1]);
             if (showRationale1 && showRationale2) {
-                ActivityCompat.requestPermissions(this, perms, PERM_REQUEST_CODE);
+                ActivityCompat.requestPermissions(this, permissions, PERM_REQUEST_CODE);
             } else {
-                //TODO: redirect the user to app settings so that they can enable both permissons from there.
-                showAlert();
+                //Redirect the user to app settings so that they can enable both permissons from there.
+                showAppSettingsDialog();
             }
         }
     }
@@ -134,31 +194,36 @@ public class SGHomeActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isBothPermissionsGranted() {
-        int result = ContextCompat.checkSelfPermission(getApplicationContext(), perms[0]);
-        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), perms[1]);
+    private boolean areBothPermissionsGranted() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), permissions[0]);
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), permissions[1]);
         return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void showAlert() {
-        final String result = "The Camera & Storage permissions are required to permform this operations. Please enable the permissions" +
-                " from the App settings.";
+    private void showAppSettingsDialog() {
+        final String message = getString(R.string.why_permissions_required);
         AlertDialog alertDialog = new AlertDialog.Builder(SGHomeActivity.this).create();
-        alertDialog.setTitle("Permission Required");
-        alertDialog.setMessage(result);
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
+        alertDialog.setTitle(getString(R.string.permission_required));
+        alertDialog.setMessage(message);
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.btn_label_close),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Goto App Settings",
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.goto_app_settings),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         openAppSettings();
                     }
                 });
         alertDialog.show();
+    }
+
+    private void copyToClip(String text) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("CLIP_LABEL", text);
+        clipboard.setPrimaryClip(clip);
     }
 
     private void openAppSettings() {
