@@ -60,15 +60,7 @@ public class SGHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (mBarcodeTv != null && mBarcodeTv.getText() != null && !mBarcodeTv.getText().toString().isEmpty()) {
-                    String escapedQuery = null;
-                    try {
-                        escapedQuery = URLEncoder.encode(mBarcodeTv.getText().toString(), "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    Uri uri = Uri.parse("http://www.google.com/#q=" + escapedQuery);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
+                    searchWeb((mBarcodeTv.getText().toString()));
                 } else {
                     showToast("Invalid Data");
                 }
@@ -98,6 +90,18 @@ public class SGHomeActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void searchWeb(String query) {
+        String escapedQuery = null;
+        try {
+            escapedQuery = URLEncoder.encode(query, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Uri uri = Uri.parse("http://www.google.com/#q=" + escapedQuery);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
     }
 
     private void showToast(String message) {
@@ -140,24 +144,6 @@ public class SGHomeActivity extends AppCompatActivity {
             //Getting the passed result
             final String result = data.getStringExtra("com.blikoon.qrcodescanner.got_qr_scan_relult");
             mBarcodeTv.setText(result);
-            /*Log.d(LOGTAG, "Have scan result in your app activity :" + result);
-            AlertDialog alertDialog = new AlertDialog.Builder(SGHomeActivity.this).create();
-            alertDialog.setTitle(getString(R.string.scan_result_title));
-            alertDialog.setMessage(result);
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.btn_label_close),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.btn_label_share),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            shareWithOtherApps(result);
-                        }
-                    });
-            alertDialog.show();
-*/
         }
     }
 
@@ -170,14 +156,14 @@ public class SGHomeActivity extends AppCompatActivity {
     }
 
     private void requestForPermission() {
-        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && !areBothPermissionsGranted()) {
+        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)) {
             boolean showRationale1 = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0]);
             boolean showRationale2 = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[1]);
             if (showRationale1 && showRationale2) {
-                ActivityCompat.requestPermissions(this, permissions, PERM_REQUEST_CODE);
-            } else {
                 //Redirect the user to app settings so that they can enable both permissons from there.
                 showAppSettingsDialog();
+            } else {
+                ActivityCompat.requestPermissions(this, permissions, PERM_REQUEST_CODE);
             }
         }
     }
@@ -224,6 +210,7 @@ public class SGHomeActivity extends AppCompatActivity {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("CLIP_LABEL", text);
         clipboard.setPrimaryClip(clip);
+        showToast(getString(R.string.copied_to_clipboard));
     }
 
     private void openAppSettings() {

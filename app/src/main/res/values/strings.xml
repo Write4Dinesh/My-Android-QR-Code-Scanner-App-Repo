@@ -10,5 +10,8 @@
     <string name="scan_error_title">Scan Error</string>
     <string name="scan_error_body">QR Code could not be scanned</string>
     <string name="scan_result_title">Scan result</string>
-    <string name="click_to_scan">Click to scan</string>
+    <string name="click_to_scan">Tap to scan</string>
+    <string name="copied_to_clipboard">Copied Text to clip board</string>
+    <string name="tap_hint">tap on TAP TO SCAN button</string>
+    <string name="admob_app_id">requestForPermission</string>
 </resources>
