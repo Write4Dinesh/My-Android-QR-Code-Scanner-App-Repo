@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    tools:context="com.sgdm.qrscanner.SGHomeActivity">
+    tools:context="com.sgdm.qrscanner.ui.SGHomeActivity">
 
     <TextView
         android:id="@+id/barcode_data_tv"

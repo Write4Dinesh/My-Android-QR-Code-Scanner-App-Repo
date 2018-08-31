@@ -1,4 +1,4 @@
-package com.sgdm.qrscanner;
+package com.sgdm.qrscanner.ui;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blikoon.qrcodescanner.QrCodeActivity;
+import com.sgdm.qrscanner.R;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
